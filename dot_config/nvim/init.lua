@@ -1,0 +1,10 @@
+if vim.g.vscode then
+  -- VSCode extension
+else
+
+  require('config.options')
+  require('config.keymaps')
+  require('config.lazy')
+  require('config.autocmds')
+
+end
