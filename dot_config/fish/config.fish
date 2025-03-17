@@ -1,6 +1,12 @@
 if status is-interactive
     # Commands to run in interactive sessions can go here
 
+    # Set vi mode
+    set -g fish_key_bindings fish_vi_key_bindings
+
+    # Disable vi mode indicators
+    function fish_mode_prompt; end
+
     # Overwrite fish_greeting
     set fish_greeting
 
@@ -50,7 +56,7 @@ if status is-interactive
     alias nvim-lazy="NVIM_APPNAME=LazyVim nvim"
     alias nvim-test="NVIM_APPNAME=NvimTest nvim"
     alias lc="eza -la --no-user --icons --no-time --no-permissions --no-filesize" # ls clean
-    alias l="eza --long --total-size -h -F --icons" # Extended details with binary sizes and type indicators
+    alias l="eza --long --total-size -h -F --icons" # Extended details with type indicators
     alias ll="eza --long --total-size -ha -F --icons" # Long format, including hidden files
     alias ls="eza --icons"
     alias n="nvim"
@@ -60,7 +66,7 @@ if status is-interactive
 
     zoxide init fish | source
 
-        # TokyoNight Color Palette
+    # TokyoNight Color Palette
     set -l foreground c0caf5
     set -l selection 283457
     set -l comment 565f89
@@ -101,3 +107,4 @@ if status is-interactive
     set -gx VISUAL cursor
 
 end
+
