@@ -9,6 +9,7 @@ sudo dnf group install -y development-tools
 # Install requested packages
 sudo dnf install -y \
     git \
+    wget \
     neovim \
     bat \
     btop \
