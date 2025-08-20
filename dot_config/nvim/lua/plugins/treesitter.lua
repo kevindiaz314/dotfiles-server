@@ -1,10 +1,11 @@
 return {
   "nvim-treesitter/nvim-treesitter",
-  event = { "BufReadPre", "BufReadPre" },
+  lazy = false,
   build = ":TSUpdate",
   dependencies = {
     "windwp/nvim-ts-autotag",
     "nvim-treesitter/nvim-treesitter-textobjects",
+    "OXY2DEV/markview.nvim",
   },
   main = "nvim-treesitter.configs",
   opts = {
@@ -19,40 +20,22 @@ return {
     },
     -- ensure these language parsers are installed
     ensure_installed = {
-      "json",
-      -- "javascript",
-      -- "typescript",
-      -- "tsx",
-      "yaml",
-      "html",
-      "css",
-      -- "prisma",
-      "markdown",
-      "markdown_inline",
-      -- "svelte",
-      -- "graphql",
       "bash",
-      "lua",
-      "vim",
-      "regex",
+      "css",
       "dockerfile",
       "gitignore",
-      "query",
-      "vimdoc",
-      "c",
+      "go",
+      "hyprlang",
       "java",
-      "nix",
+      "json",
+      "lua",
+      "markdown",
+      "markdown_inline",
+      "python",
+      "qmljs",
+      "regex",
+      "yaml"
     },
-
-    -- incremental_selection = {
-    --   enable = true,
-    --   keymaps = {
-    --     init_selection = "<C-space>",
-    --     node_incremental = "<C-space>",
-    --     scope_incremental = false,
-    --     node_decremental = "<bs>",
-    --   },
-    -- },
 
     textobjects = {
       select = {
@@ -64,9 +47,9 @@ return {
           ["ac"] = "@conditional.outer",
           ["ic"] = "@conditional.inner",
           ["al"] = "@loop.outer",
-          ["il"] = "@loop.inner",
-        },
-      },
-    },
-  },
+          ["il"] = "@loop.inner"
+        }
+      }
+    }
+  }
 }
