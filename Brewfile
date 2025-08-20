@@ -1,8 +1,0 @@
-brew "atuin"
-brew "chezmoi"
-brew "fish"
-brew "lazygit"
-brew "oh-my-posh"
-brew "yazi"
-brew "zellij"
-brew "lazydocker"
