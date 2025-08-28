@@ -27,8 +27,6 @@ return {
     mason_lspconfig.setup({
       ensure_installed = {
         "lua_ls",
-        "clangd",
-        "gopls"
       },
       -- Automatically install LSPs to stdpath for neovim
       automatic_installation = true,
