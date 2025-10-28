@@ -1,0 +1,21 @@
+packages:
+  linux:
+    apt:
+      - atuin
+      - git
+      - bat
+      - btop
+      - eza
+      - fd-find
+      - fzf
+      - ripgrep
+      - fastfetch
+      - zoxide
+      - neovim
+
+services:
+  linux:
+    system:
+      - tailscaled.service
+    user:
+      - ssh-agent.service

@@ -1,0 +1,150 @@
+#!/usr/bin/fish --no-config
+
+{{ if eq .chezmoi.os "linux" -}}
+# APT Package Installation Script
+# This script declaratively installs packages for APT-based Linux systems
+# Package definitions are stored in .chezmoidata/packages.yaml
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║                             UTILITY FUNCTIONS                                ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# Enhanced echo functions for better visibility
+function print_header
+    set_color -o cyan
+    echo "╔══════════════════════════════════════════════════════════════════════════════╗"
+    echo "    $argv                                                                       "
+    echo "╚══════════════════════════════════════════════════════════════════════════════╝"
+    set_color normal
+end
+
+function print_step
+    set_color -o yellow
+    echo "[$STEP_COUNTER/$TOTAL_STEPS] $argv"
+    set_color normal
+    log_message "STEP [$STEP_COUNTER/$TOTAL_STEPS]: $argv"
+    set STEP_COUNTER (math $STEP_COUNTER + 1)
+end
+
+function print_success
+    set_color -o green
+    echo "✅ $argv"
+    set_color normal
+end
+
+function print_info
+    set_color -o blue
+    echo "ℹ️  $argv"
+    set_color normal
+end
+
+function print_warning
+    set_color -o yellow
+    echo "⚠️  $argv"
+    set_color normal
+end
+
+function print_error
+    set_color -o red
+    echo "❌ $argv"
+    set_color normal
+end
+
+function log_message
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $argv" >>$LOG_FILE
+end
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║                       INITIALIZATION & STEP COUNTING                         ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# Count total steps dynamically based on what exists in packages.yaml
+set TOTAL_STEPS 0
+
+# Package installation steps (only if packages exist)
+{{ if .packages.linux.apt }}set TOTAL_STEPS (math $TOTAL_STEPS + 1){{ end }}
+
+# Service configuration steps (only if services exist)  
+{{ if .services.linux.system }}set TOTAL_STEPS (math $TOTAL_STEPS + 1){{ end }}
+{{ if .services.linux.user }}set TOTAL_STEPS (math $TOTAL_STEPS + 1){{ end }}
+
+# Initialize counters and logging
+set STEP_COUNTER 1
+set START_TIME (date +%s)
+set LOG_FILE "/tmp/chezmoi-install-$(date +%Y%m%d-%H%M%S).log"
+
+print_header "🚀 APT Package Installation & Configuration"
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║                             PACKAGE INSTALLATION                             ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+{{ if .packages.linux.apt }}
+# Install APT packages
+print_step "Installing APT packages"
+sudo apt update
+sudo apt install {{ range .packages.linux.apt }} \
+    {{ . }}{{ end }}
+{{ end }}
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║                         SYSTEM SERVICE CONFIGURATION                         ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+{{ if .services.linux.system }}
+# Enable system services
+print_step "Enabling system services"
+{{ range .services.linux.system }}
+set service_name {{ . }}
+if not systemctl is-enabled $service_name >/dev/null 2>&1
+    print_info "Enabling $service_name..."
+    sudo systemctl enable --now $service_name
+else
+    print_info "$service_name already enabled"
+end
+{{ end }}
+{{ end }}
+
+{{ if .services.linux.user }}
+# Enable user services
+print_step "Enabling user services"
+{{ range .services.linux.user }}
+set service_name {{ . }}
+if not systemctl --user is-enabled $service_name >/dev/null 2>&1
+    print_info "Enabling $service_name..."
+    systemctl --user enable --now $service_name
+else
+    print_info "$service_name already enabled"
+end
+{{ end }}
+
+{{ end }}
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║                             COMPLETION SUMMARY                               ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# Calculate elapsed time and show summary
+set END_TIME (date +%s)
+set ELAPSED_TIME (math $END_TIME - $START_TIME)
+
+# Smart time display - only show minutes if >= 1 minute
+if test $ELAPSED_TIME -ge 60
+    set MINUTES (math $ELAPSED_TIME / 60)
+    set SECONDS (math $ELAPSED_TIME % 60)
+    set TIME_DISPLAY "$MINUTES"m "$SECONDS"s
+else
+    set TIME_DISPLAY "$ELAPSED_TIME"s
+end
+
+print_header "🎉 Installation Complete!"
+print_success "All packages and configurations have been successfully installed"
+print_info "Total execution time: $TIME_DISPLAY"
+print_info "APT packages: {{ len .packages.linux.apt }} installed"
+print_info "Services configured: {{ len .services.linux.system }} system, {{ len .services.linux.user }} user"
+echo ""
+print_info "You may need to restart your session for some changes to take effect"
+{{ else -}}
+print_error "This script is designed for APT-based Linux systems. Current OS: {{ .chezmoi.os }}"
+exit 1
+{{ end -}}
