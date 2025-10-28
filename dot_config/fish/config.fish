@@ -1,18 +1,29 @@
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║                            Fish Shell Configuration                          ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
 # Set vi mode
 set -g fish_key_bindings fish_vi_key_bindings
 
 # Disable vi mode indicators
-function fish_mode_prompt; end
+function fish_mode_prompt
+end
 
 # Overwrite fish_greeting
 set fish_greeting
 
-# Initialize Oh-My-Posh and fastfetch
-oh-my-posh init fish --config ~/.config/ohmyposh/omp.toml | source
-fastfetch
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║                               Initialization                                 ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# Initialize Oh-My-Posh and fastfetch (skip if running in VSCode, Kiro, or Zed)
+if test "$TERM_PROGRAM" != vscode; and test "$TERM_PROGRAM" != kiro; and test "$TERM_PROGRAM" != zed
+    oh-my-posh init fish | source
+    fastfetch
+end
 
 # Set up fzf key bindings
-fzf --fish | source;
+fzf --fish | source
 
 # Shell plugin
 atuin init fish | source
@@ -20,20 +31,9 @@ atuin init fish | source
 # Set up Zoxide
 zoxide init fish | source
 
-# Interactive Neovim search
-function nvims
-    set -l items Default LazyVim
-    set -l config (printf "%s\n" $items | fzf --prompt=" Neovim Config   " --height=~50% --layout=reverse --border --exit-0)
-
-    if test -z "$config"
-        echo "Nothing selected"
-        return 0
-    else if test "$config" = Default
-        set config ""
-    end
-
-    env NVIM_APPNAME=$config nvim $argv
-end
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║                             Custom Functions                                 ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # Select a file with fzf and preview it using bat, then open it in Neovim
 function in
@@ -48,14 +48,16 @@ end
 function y
     set tmp (mktemp -t "yazi-cwd.XXXXXX")
     yazi $argv --cwd-file="$tmp"
-    if set cwd (command cat -- "$tmp"); and [ -n "$cwd" ]; and [ "$cwd" != "$PWD" ]
+    if read -z cwd <"$tmp"; and [ -n "$cwd" ]; and [ "$cwd" != "$PWD" ]
         builtin cd -- "$cwd"
     end
     rm -f -- "$tmp"
 end
 
-alias laz="NVIM_APPNAME=LazyVim nvim"
-alias nvim-test="NVIM_APPNAME=NvimTest nvim"
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║                                   Aliases                                    ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
 alias lc="eza -la --no-user --icons --no-time --no-permissions --no-filesize" # ls clean
 alias l="eza --long --total-size -h -F --icons" # Extended details with type indicators
 alias ll="eza --long --total-size -ha -F --icons" # Long format, including hidden files
@@ -64,8 +66,13 @@ alias n="nvim"
 alias ff="fastfetch"
 alias lg="lazygit"
 alias sp="spf"
+alias op="opencode"
 
-# TokyoNight Color Palette
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║                         Theme: TokyoNight                                    ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# Color Palette
 set -l foreground c0caf5
 set -l selection 283457
 set -l comment 565f89
@@ -101,11 +108,10 @@ set -g fish_pager_color_completion $foreground
 set -g fish_pager_color_description $yellow
 set -g fish_pager_color_selected_background --background=$selection
 
-# Set the EDITOR and VISUAL environment variable
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║                      Environment Variables                                   ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# Set the EDITOR, and SUDO_EDITOR environment variable
 set -gx EDITOR nvim
-
-# SSH Agent environment (Linux only - macOS handles this automatically)
-# if test (uname) = "Linux"; and test -z "$SSH_AUTH_SOCK"
-#     set -gx SSH_AUTH_SOCK "$XDG_RUNTIME_DIR/ssh-agent.socket"
-# end
-
+set -gx SUDO_EDITOR nvim
