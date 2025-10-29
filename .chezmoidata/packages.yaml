@@ -2,7 +2,9 @@ packages:
   linux:
     apt:
       - atuin
-      - git
+      - nodejs
+      - gcc
+      - starship
       - bat
       - btop
       - eza
@@ -19,3 +21,4 @@ services:
       - tailscaled.service
     user:
       - ssh-agent.service
+      - ssh-add.service
