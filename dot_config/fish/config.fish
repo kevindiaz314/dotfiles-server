@@ -18,7 +18,7 @@ set fish_greeting
 
 # Initialize Oh-My-Posh and fastfetch (skip if running in VSCode, Kiro, or Zed)
 if test "$TERM_PROGRAM" != vscode; and test "$TERM_PROGRAM" != kiro; and test "$TERM_PROGRAM" != zed
-    oh-my-posh init fish | source
+    starship init fish | source
     fastfetch
 end
 
