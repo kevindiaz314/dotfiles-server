@@ -16,9 +16,11 @@ set fish_greeting
 # ║                               Initialization                                 ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
-# Initialize Oh-My-Posh and fastfetch (skip if running in VSCode, Kiro, or Zed)
+# Initialize Starship
+starship init fish | source
+
+# Initialize fastfetch (skip if running in VSCode, Kiro, or Zed)
 if test "$TERM_PROGRAM" != vscode; and test "$TERM_PROGRAM" != kiro; and test "$TERM_PROGRAM" != zed
-    starship init fish | source
     fastfetch
 end
 
