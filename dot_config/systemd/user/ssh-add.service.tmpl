@@ -5,7 +5,7 @@ Requires=ssh-agent.service
 
 [Service]
 Type=oneshot
-Environment="SSH_AUTH_SOCK=%t/ssh-agent.socket"
+Environment="SSH_AUTH_SOCK=%t/openssh_agent"
 ExecStart=/usr/bin/ssh-add /home/{{ .chezmoi.username }}/.ssh/github_key
 
 [Install]
