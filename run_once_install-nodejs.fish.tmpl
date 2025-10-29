@@ -1,0 +1,45 @@
+#!/usr/bin/fish --no-config
+{{ if eq .chezmoi.os "linux" -}}
+# Install Node.js via NodeSource (runs only once)
+
+function print_success
+    set_color -o green
+    echo "✅ $argv"
+    set_color normal
+end
+
+function print_error
+    set_color -o red
+    echo "❌ $argv"
+    set_color normal
+end
+
+function print_info
+    set_color -o blue
+    echo "ℹ️  $argv"
+    set_color normal
+end
+
+print_info "Installing Node.js from NodeSource..."
+
+# Add NodeSource repository
+print_info "Adding NodeSource repository for Node.js 24.x..."
+curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
+
+if test $status -ne 0
+    print_error "Failed to add NodeSource repository"
+    exit 1
+end
+
+# Install Node.js
+print_info "Installing Node.js..."
+sudo apt install nodejs -y
+
+if test $status -eq 0
+    set node_version (node -v)
+    print_success "Node.js installed successfully: $node_version"
+else
+    print_error "Failed to install Node.js"
+    exit 1
+end
+{{ end -}}

@@ -1,0 +1,32 @@
+#!/usr/bin/fish --no-config
+{{ if eq .chezmoi.os "linux" -}}
+# Install Tailscale (runs only once)
+
+function print_success
+    set_color -o green
+    echo "✅ $argv"
+    set_color normal
+end
+
+function print_error
+    set_color -o red
+    echo "❌ $argv"
+    set_color normal
+end
+
+function print_info
+    set_color -o blue
+    echo "ℹ️  $argv"
+    set_color normal
+end
+
+print_info "Installing Tailscale..."
+curl -fsSL https://tailscale.com/install.sh | sh
+
+if test $status -eq 0
+    print_success "Tailscale installed successfully"
+else
+    print_error "Failed to install Tailscale"
+    exit 1
+end
+{{ end -}}
