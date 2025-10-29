@@ -1,0 +1,7 @@
+{{ if eq .chezmoi.os "linux" -}}
+# GitHub
+Host github.com
+  User git
+  IdentityFile ~/.ssh/github_key
+  AddKeysToAgent yes
+{{ end -}}
