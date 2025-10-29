@@ -4,8 +4,6 @@ packages:
       - atuin
       - git
       - zip
-      - nodejs
-      - npm
       - lazygit
       - gcc
       - starship
@@ -17,10 +15,9 @@ packages:
       - ripgrep
       - fastfetch
       - zoxide
-      - neovim
     snap:
       - "yazi --classic"
-      - tailscale
+      - "nvim --classic"
 
 services:
   linux:
