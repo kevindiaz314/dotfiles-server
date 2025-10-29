@@ -63,6 +63,7 @@ set TOTAL_STEPS 0
 
 # Package installation steps (only if packages exist)
 {{ if .packages.linux.apt }}set TOTAL_STEPS (math $TOTAL_STEPS + 1){{ end }}
+{{ if .packages.linux.snap }}set TOTAL_STEPS (math $TOTAL_STEPS + 1){{ end }}
 
 # Service configuration steps (only if services exist)  
 {{ if .services.linux.system }}set TOTAL_STEPS (math $TOTAL_STEPS + 1){{ end }}
@@ -82,9 +83,18 @@ print_header "🚀 APT Package Installation & Configuration"
 {{ if .packages.linux.apt }}
 # Install APT packages
 print_step "Installing APT packages"
-sudo apt update
 sudo apt install {{ range .packages.linux.apt }} \
     {{ . }}{{ end }}
+{{ end }}
+
+{{ if .packages.linux.snap }}
+# Install Snap packages
+print_step "Installing Snap packages"
+
+# Install defined snaps (each may include flags like --classic)
+{{ range .packages.linux.snap }}
+sudo snap install {{ . }}
+{{ end }}
 {{ end }}
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -141,6 +151,7 @@ print_header "🎉 Installation Complete!"
 print_success "All packages and configurations have been successfully installed"
 print_info "Total execution time: $TIME_DISPLAY"
 print_info "APT packages: {{ len .packages.linux.apt }} installed"
+print_info "Snap packages: {{ len .packages.linux.snap }} installed"
 print_info "Services configured: {{ len .services.linux.system }} system, {{ len .services.linux.user }} user"
 echo ""
 print_info "You may need to restart your session for some changes to take effect"

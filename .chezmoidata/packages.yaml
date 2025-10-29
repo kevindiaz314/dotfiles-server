@@ -2,7 +2,11 @@ packages:
   linux:
     apt:
       - atuin
+      - git
+      - zip
       - nodejs
+      - npm
+      - lazygit
       - gcc
       - starship
       - bat
@@ -14,11 +18,13 @@ packages:
       - fastfetch
       - zoxide
       - neovim
+    snap:
+      - "yazi --classic"
+      - tailscale
 
 services:
   linux:
-    system:
-      - tailscaled.service
+    system: []
     user:
       - ssh-agent.service
       - ssh-add.service
